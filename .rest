@@ -1,0 +1,21 @@
+GET http://localhost:5000/api
+
+###
+
+GET http://localhost:5000/api/4
+
+###
+
+POST http://localhost:5000/api
+Content-Type: application/json
+
+ {
+    "firstName": "Viktor",
+    "lastName": "Hovland",
+    "age": "21",
+    "mainSponsor": "Ping"
+  }
+
+###
+
+DELETE http://localhost:5000/api/1
