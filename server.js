@@ -1,4 +1,6 @@
 import express from "express";
+import ResponseError from "./responseError.js";
+import fs from "fs";
 
 const app = express();
 const PORT = 5000;
@@ -16,7 +18,7 @@ const golfers = [
     firstName: "Justin",
     lastName: "Thomas",
     age: "28",
-    mainSponsor: "Titleist",
+    mainSponsor: "Titleis",
   },
   {
     id: "3",
@@ -31,12 +33,25 @@ const error = {
   ERROR: "Nothing was found",
 };
 
-app.use(express.static("./public"));
+// LOGGER MIDDLEWARE
+app.use((res, req, next) => {
+  console.log(req.method + " " + req.path);
+  next();
+});
 
+app.use(express.static("./public"));
 app.use(express.json());
 
 // GET ALL
-app.get("/api", (req, res) => res.send(golfers));
+app.get("/api", (req, res) => {
+  fs.readFile("./golfers.json", (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status[500].json("Something went wrong... ");
+    }
+    res.json(JSON.parse(data.toString()));
+  });
+});
 
 // GET SPECIFIC
 app.get("/api/:id", (req, res) => {
@@ -63,11 +78,22 @@ app.post("/api", (req, res) => {
 });
 
 // DELETE
-app.delete("/api:id", (req, res) => {
+app.delete("/api/:id", (req, res) => {
   const id = req.params.id;
   const i = golfers.findIndex((g) => g.id === id);
-  golfers.splice(i, 1);
-  res.json(golfers);
+  if (i === -1) {
+    return new ResponseError(404, `Index ${req.params.id} is not defined.`);
+  } else {
+    golfers.splice(i, 1);
+    res.json(golfers);
+  }
+});
+
+// ERROR MIDDLEWARE
+app.use((err, req, res, next) => {
+  console.log(err);
+  const statusCode = err.status || err.statusCode || 500;
+  res.status(statusCode).json({ message: err.message });
 });
 
 // LISTEN

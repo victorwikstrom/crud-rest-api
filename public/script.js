@@ -30,12 +30,12 @@ const populateUI = () => {
 const getAll = async () => {
   const golfers = await makeRequest("/api", "GET");
   golfers.map((golfer) => {
-    createGolfer(golfer);
+    createGolferElements(golfer);
   });
 };
 const getSpecific = async (id) => {
   const golfer = await makeRequest(`/api/${id}`, "GET");
-  createGolfer(golfer);
+  createGolferElements(golfer);
 };
 
 const makeRequest = async (url, method, body) => {
@@ -52,7 +52,7 @@ const makeRequest = async (url, method, body) => {
   return response.json();
 };
 
-const createGolfer = (golfer) => {
+const createGolferElements = (golfer) => {
   const { firstName, lastName, age, mainSponsor } = golfer;
   const nameElem = document.createElement("h3");
   const ageElem = document.createElement("h3");

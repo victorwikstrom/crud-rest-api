@@ -2,7 +2,11 @@ GET http://localhost:5000/api
 
 ###
 
-GET http://localhost:5000/api/4
+GET http://localhost:5000/api/3
+
+###
+
+GET http://localhost:5000/about
 
 ###
 
@@ -18,4 +22,4 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:5000/api/1
+DELETE http://localhost:5000/api/5
