@@ -2,11 +2,16 @@ GET http://localhost:5000/api
 
 ###
 
-GET http://localhost:5000/api/3
+GET http://localhost:5000/api/10
 
 ###
 
-GET http://localhost:5000/about
+PUT http://localhost:5000/api/3
+Content-Type: application/json
+
+ { 
+   "mainSponsor": "Cobra" 
+ }
 
 ###
 
@@ -22,4 +27,4 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:5000/api/5
+DELETE http://localhost:5000/api/4

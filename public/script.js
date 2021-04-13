@@ -9,33 +9,41 @@ const initApp = () => {
 const container = document.createElement("div");
 
 const populateUI = () => {
-  // GET ALL
+  // GET ALL BUTTON
   const getAllButton = document.createElement("button");
   getAllButton.innerText = "Get all golfers";
   getAllButton.addEventListener("click", () => {
-    getAll();
+    fetchAllGolfers();
   });
   document.body.appendChild(getAllButton);
 
-  // GET SPECIFIC
+  // GET SPECIFIC BUTTON
   const getSpecificButton = document.createElement("button");
   getSpecificButton.innerText = "Get specific golfer";
   getSpecificButton.addEventListener("click", () => {
-    getSpecific(2);
+    fetchSpecificGolfer(3);
   });
   document.body.appendChild(getSpecificButton);
   document.body.appendChild(container);
 };
 
-const getAll = async () => {
+const fetchAllGolfers = async () => {
   const golfers = await makeRequest("/api", "GET");
-  golfers.map((golfer) => {
-    createGolferElements(golfer);
-  });
+  if (golfers == []) {
+    createErrorElement("No golfers are defined on the server");
+  } else {
+    golfers.map((golfer) => {
+      createGolferElements(golfer);
+    });
+  }
 };
-const getSpecific = async (id) => {
+const fetchSpecificGolfer = async (id) => {
   const golfer = await makeRequest(`/api/${id}`, "GET");
-  createGolferElements(golfer);
+  if (golfer) {
+    createGolferElements(golfer);
+  } else {
+    createErrorElement("Could not fetch golfer from server on requested ID");
+  }
 };
 
 const makeRequest = async (url, method, body) => {
@@ -63,6 +71,12 @@ const createGolferElements = (golfer) => {
   container.appendChild(nameElem);
   container.appendChild(ageElem);
   container.appendChild(sponsorElem);
+};
+
+const createErrorElement = (errorMsg) => {
+  const errorElem = document.createElement("h3");
+  errorElem.innerText = errorMsg;
+  container.appendChild(errorElem);
 };
 
 const clearContainer = () => {
