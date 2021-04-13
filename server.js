@@ -7,6 +7,7 @@ const app = express();
 const PORT = 5000;
 
 app.use(express.static("./public"));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // GET ALL
@@ -16,7 +17,7 @@ app.get("/api", async (req, res) => {
     const golfers = JSON.parse(data.toString());
     res.json(golfers);
   } else {
-    throw new ResErr(404, "No golfers defined in datafile");
+    throw new ResErr(404, "No golfers in datafile");
   }
 });
 
@@ -34,33 +35,27 @@ app.get("/api/:id", async (req, res) => {
     }
     res.json(golfer);
   } else {
-    throw new ResErr(404, "No golfers defined in datafile");
+    throw new ResErr(404, "No golfers in datafile");
   }
 });
+
+//CREATE NEW TODO
 
 // ADD NEW
 app.post("/api", async (req, res) => {
   const data = await readJsonData("./golfers.json");
   if (data) {
     const golfers = JSON.parse(data.toString());
-    const { firstName, lastName, age, mainSponsor } = req.body;
-    const newGolfer = {
-      id: String(getNewId(golfers)),
-      firstName: firstName,
-      lastName: lastName,
-      age: age,
-      mainSponsor: mainSponsor,
-    };
+    const newGolfer = { ...req.body, id: String(getNewId(golfers)) };
     golfers.push(newGolfer);
-
-    await writeJsonData("./golfers.json", golfers);
+    writeJsonData("./golfers.json", golfers);
     res.json(
-      `New golfer ${
+      `${
         newGolfer.firstName + " " + newGolfer.lastName
-      } is saved to JSON-file.`
+      } was sucessfully saved to JSON-file.`
     );
   } else {
-    throw new ResErr(404, "No golfers defined in datafile");
+    throw new ResErr(404, "No golfers in datafile");
   }
 });
 
@@ -69,9 +64,7 @@ app.put("/api/:id", async (req, res) => {
   const data = await readJsonData("./golfers.json");
   if (data) {
     const golfers = JSON.parse(data.toString());
-
     const index = golfers.findIndex((g) => g.id === req.params.id);
-
     if (index === -1) {
       throw new ResErr(
         404,
@@ -82,12 +75,12 @@ app.put("/api/:id", async (req, res) => {
     golfers[index].mainSponsor = mainSponsor;
     await writeJsonData("./golfers.json", golfers);
     res.json(
-      `Golfer ${
+      `${
         golfers[index].firstName + " " + golfers[index].lastName
       } has updated sponsor to ${mainSponsor}.`
     );
   } else {
-    throw new ResErr(404, "No golfers defined in datafile");
+    throw new ResErr(404, "No golfers in datafile");
   }
 });
 
@@ -107,21 +100,21 @@ app.delete("/api/:id", async (req, res) => {
       );
     }
     res.json(
-      `Golfer ${
+      `${
         golfers[index].firstName + " " + golfers[index].lastName
       } was sucessfully deleted from JSON-file.`
     );
     golfers.splice(index, 1);
     await writeJsonData("./golfers.json", golfers);
   } else {
-    throw new ResErr(404, "No golfers defined in datafile");
+    throw new ResErr(404, "No golfers in datafile");
   }
 });
 
 // ERROR MIDDLEWARE
 app.use((err, req, res, next) => {
   const statusCode = err.status || err.statusCode || 500;
-  res.status(statusCode).json({ ErrorCode: statusCode, Message: err.message });
+  res.status(statusCode).json({ errorCode: statusCode, message: err.message });
 });
 
 // LISTEN

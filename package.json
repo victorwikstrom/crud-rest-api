@@ -1,19 +1,26 @@
 {
   "name": "crud-rest-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "",
+  "main": "helpers.js",
   "type": "module",
   "scripts": {
     "start": "nodemon server.js --watch server.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/victorwikstrom/crud-rest-api.git"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/victorwikstrom/crud-rest-api/issues"
+  },
+  "homepage": "https://github.com/victorwikstrom/crud-rest-api#readme",
   "dependencies": {
-    "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "nodemon": "^2.0.7"
-  },
-  "description": ""
+  }
 }

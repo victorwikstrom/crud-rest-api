@@ -24,63 +24,131 @@ const populateUI = () => {
     fetchSpecificGolfer(3);
   });
   document.body.appendChild(getSpecificButton);
+
+  // CREATE GOLFER BUTTON
+  const createGolferButton = document.createElement("button");
+  createGolferButton.innerText = "Create new golfer";
+  createGolferButton.addEventListener("click", () => {
+    createNewGolfer();
+  });
+  document.body.appendChild(createGolferButton);
+
+  // UPDATE GOLFER BUTTON
+  const updateGolferButton = document.createElement("button");
+  updateGolferButton.innerText = "Update golfer";
+  updateGolferButton.addEventListener("click", () => {
+    updateGolfer(3);
+  });
+  document.body.appendChild(updateGolferButton);
+
+  // DELETE GOLFER BUTTON
+  const deleteButton = document.createElement("button");
+  deleteButton.innerText = "Delete golfer";
+  deleteButton.addEventListener("click", () => {
+    deleteGolfer(2);
+  });
+  document.body.appendChild(deleteButton);
+
   document.body.appendChild(container);
 };
 
 const fetchAllGolfers = async () => {
-  const golfers = await makeRequest("/api", "GET");
-  if (golfers == []) {
-    createErrorElement("No golfers are defined on the server");
+  const response = await makeRequest("/api", "GET");
+  if (response == []) {
+    createStatusElement("No golfers are defined on the server");
   } else {
-    golfers.map((golfer) => {
+    response.map((golfer) => {
       createGolferElements(golfer);
     });
   }
 };
 const fetchSpecificGolfer = async (id) => {
   const golfer = await makeRequest(`/api/${id}`, "GET");
-  if (golfer) {
+  if (golfer.id) {
     createGolferElements(golfer);
   } else {
-    createErrorElement("Could not fetch golfer from server on requested ID");
+    createStatusElement(`No golfer was found on id: ${id}.`);
   }
 };
 
-const makeRequest = async (url, method, body) => {
+const createNewGolfer = async () => {
+  const newGolfer = {
+    firstName: "Victor",
+    lastName: "Wikström",
+    age: "28",
+    mainSponsor: "Mum and Dad",
+  };
+
+  const response = await makeRequest("/api/", "POST", newGolfer);
+  createResponse(response);
+};
+
+const updateGolfer = async (id) => {
+  const newSponsor = { mainSponsor: "Cobra" };
+  const response = await makeRequest(
+    `http://localhost:5000/api/${id}`,
+    "PUT",
+    newSponsor
+  );
+  createResponse(response);
+};
+
+const deleteGolfer = async (id) => {
+  const response = await makeRequest(`/api/${id}`, "DELETE");
+  createResponse(response);
+};
+
+const makeRequest = async (url, method, reqBody) => {
   clearContainer();
 
   const response = await fetch(url, {
     method: method,
-    body: body,
     header: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify(reqBody),
   });
-
-  return response.json();
+  const result = await response.json();
+  return result;
 };
 
 const createGolferElements = (golfer) => {
-  const { firstName, lastName, age, mainSponsor } = golfer;
-  const nameElem = document.createElement("h3");
-  const ageElem = document.createElement("h3");
-  const sponsorElem = document.createElement("h3");
+  const { id, firstName, lastName, age, mainSponsor } = golfer;
+
+  const idElem = document.createElement("h4");
+  const nameElem = document.createElement("h4");
+  const ageElem = document.createElement("h4");
+  const sponsorElem = document.createElement("h4");
+  idElem.innerText = "ID: " + id;
   nameElem.innerText = "Name: " + firstName + " " + lastName;
   ageElem.innerText = "Age: " + age;
   sponsorElem.innerText = "Main sponsor: " + mainSponsor;
+  container.appendChild(idElem);
   container.appendChild(nameElem);
   container.appendChild(ageElem);
   container.appendChild(sponsorElem);
 };
 
-const createErrorElement = (errorMsg) => {
-  const errorElem = document.createElement("h3");
+const createStatusElement = (errorMsg, color) => {
+  const errorElem = document.createElement("h4");
+  errorElem.style.color = color;
   errorElem.innerText = errorMsg;
   container.appendChild(errorElem);
 };
 
+const createResponse = (response) => {
+  if (response instanceof Object) {
+    createStatusElement(
+      response.errorCode + " error. " + response.message,
+      "red"
+    );
+  } else {
+    createStatusElement(response, "black");
+  }
+};
+
 const clearContainer = () => {
   while (container.lastChild) {
-    container.removeChild(container.firstChild);
+    container.removeChild(container.lastChild);
   }
 };
