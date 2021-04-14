@@ -6,16 +6,16 @@ import "express-async-errors";
 const app = express();
 const PORT = 5000;
 
+app.use(express.json());
 app.use(express.static("./public"));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
 // GET ALL
 app.get("/api", async (req, res) => {
   const data = await readJsonData("./golfers.json");
   if (data) {
     const golfers = JSON.parse(data.toString());
-    res.json(golfers);
+    res.status(200).json(golfers);
   } else {
     throw new ResErr(404, "No golfers in datafile");
   }
@@ -39,9 +39,7 @@ app.get("/api/:id", async (req, res) => {
   }
 });
 
-//CREATE NEW TODO
-
-// ADD NEW
+// CREATE NEW
 app.post("/api", async (req, res) => {
   const data = await readJsonData("./golfers.json");
   if (data) {
@@ -49,11 +47,13 @@ app.post("/api", async (req, res) => {
     const newGolfer = { ...req.body, id: String(getNewId(golfers)) };
     golfers.push(newGolfer);
     writeJsonData("./golfers.json", golfers);
-    res.json(
-      `${
-        newGolfer.firstName + " " + newGolfer.lastName
-      } was sucessfully saved to JSON-file.`
-    );
+    res
+      .status(201)
+      .json(
+        `${
+          newGolfer.firstName + " " + newGolfer.lastName
+        } was sucessfully saved to JSON-file.`
+      );
   } else {
     throw new ResErr(404, "No golfers in datafile");
   }
@@ -74,17 +74,19 @@ app.put("/api/:id", async (req, res) => {
     const { mainSponsor } = req.body;
     golfers[index].mainSponsor = mainSponsor;
     await writeJsonData("./golfers.json", golfers);
-    res.json(
-      `${
-        golfers[index].firstName + " " + golfers[index].lastName
-      } has updated sponsor to ${mainSponsor}.`
-    );
+    res
+      .status(200)
+      .json(
+        `${
+          golfers[index].firstName + " " + golfers[index].lastName
+        } has updated sponsor to ${mainSponsor}.`
+      );
   } else {
     throw new ResErr(404, "No golfers in datafile");
   }
 });
 
-// DELETE
+// DELETE SPECIFIC
 app.delete("/api/:id", async (req, res) => {
   const data = await readJsonData("./golfers.json");
   if (data) {
@@ -99,16 +101,24 @@ app.delete("/api/:id", async (req, res) => {
         `No golfer with id '${req.params.id}' exists in file`
       );
     }
-    res.json(
-      `${
-        golfers[index].firstName + " " + golfers[index].lastName
-      } was sucessfully deleted from JSON-file.`
-    );
+    res
+      .status(200)
+      .json(
+        `${
+          golfers[index].firstName + " " + golfers[index].lastName
+        } was sucessfully deleted from JSON-file.`
+      );
     golfers.splice(index, 1);
     await writeJsonData("./golfers.json", golfers);
   } else {
     throw new ResErr(404, "No golfers in datafile");
   }
+});
+
+//DELETE ALL
+app.delete("/api/", async (req, res) => {
+  const golfers = [];
+  await writeJsonData("./golfers.json", golfers);
 });
 
 // ERROR MIDDLEWARE

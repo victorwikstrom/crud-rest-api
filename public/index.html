@@ -4,18 +4,24 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script defer src="./script.js"></script>
-    <style>
-      body {
-        font-family: Arial, Helvetica, sans-serif;
-      }
-      button {
-        margin-right: 1rem;
-      }
-    </style>
+    <script src="./script.js"></script>
+    <link rel="stylesheet" href="style.css" />
     <title>Golfers CRUD REST API</title>
   </head>
   <body>
     <h1>CRUD API for some golfers in a JSON file</h1>
+    <div class="container">
+      <div class="left wrapper" id="left-wrapper">
+        <button id="fetchAll">Fetch all golfers</button>
+        <button id="fetchSpecific">Fetch specific golfer</button>
+        <button id="create">Create new golfer</button>
+        <button id="update">Update existing golfer</button>
+        <button id="deleteSpecific">Delete specific golfer</button>
+        <button id="deleteAll">Delete all golfers</button>
+      </div>
+      <div class="right wrapper" id="right-wrapper">
+        <h2>Output from server</h2>
+      </div>
+    </div>
   </body>
 </html>

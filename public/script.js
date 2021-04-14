@@ -3,53 +3,44 @@ window.addEventListener("load", () => {
 });
 
 const initApp = () => {
-  populateUI();
+  addEventListeners();
 };
 
-const container = document.createElement("div");
+const outputWrapper = document.createElement("div");
 
-const populateUI = () => {
+const addEventListeners = () => {
   // GET ALL BUTTON
-  const getAllButton = document.createElement("button");
-  getAllButton.innerText = "Get all golfers";
-  getAllButton.addEventListener("click", () => {
+  const fetchAllBtn = document.getElementById("fetchAll");
+  fetchAllBtn.addEventListener("click", () => {
     fetchAllGolfers();
   });
-  document.body.appendChild(getAllButton);
 
   // GET SPECIFIC BUTTON
-  const getSpecificButton = document.createElement("button");
-  getSpecificButton.innerText = "Get specific golfer";
-  getSpecificButton.addEventListener("click", () => {
+  fetchSpecificBtn = document.getElementById("fetchSpecific");
+  fetchSpecificBtn.addEventListener("click", () => {
     fetchSpecificGolfer(3);
   });
-  document.body.appendChild(getSpecificButton);
 
   // CREATE GOLFER BUTTON
-  const createGolferButton = document.createElement("button");
-  createGolferButton.innerText = "Create new golfer";
-  createGolferButton.addEventListener("click", () => {
+  createBtn = document.getElementById("create");
+  createBtn.addEventListener("click", () => {
     createNewGolfer();
   });
-  document.body.appendChild(createGolferButton);
 
   // UPDATE GOLFER BUTTON
-  const updateGolferButton = document.createElement("button");
-  updateGolferButton.innerText = "Update golfer";
-  updateGolferButton.addEventListener("click", () => {
-    updateGolfer(3);
+  updateBtn = document.getElementById("update");
+  updateBtn.addEventListener("click", () => {
+    updateGolfer(2);
   });
-  document.body.appendChild(updateGolferButton);
 
   // DELETE GOLFER BUTTON
-  const deleteButton = document.createElement("button");
-  deleteButton.innerText = "Delete golfer";
-  deleteButton.addEventListener("click", () => {
+  deleteBtn = document.getElementById("deleteSpecific");
+  deleteBtn.addEventListener("click", () => {
     deleteGolfer(2);
   });
-  document.body.appendChild(deleteButton);
 
-  document.body.appendChild(container);
+  const rightWrapper = document.getElementById("right-wrapper");
+  rightWrapper.appendChild(outputWrapper);
 };
 
 const fetchAllGolfers = async () => {
@@ -99,11 +90,11 @@ const deleteGolfer = async (id) => {
 };
 
 const makeRequest = async (url, method, reqBody) => {
-  clearContainer();
+  clearOutput();
 
   const response = await fetch(url, {
     method: method,
-    header: {
+    headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(reqBody),
@@ -114,26 +105,29 @@ const makeRequest = async (url, method, reqBody) => {
 
 const createGolferElements = (golfer) => {
   const { id, firstName, lastName, age, mainSponsor } = golfer;
+  const wrapper = document.createElement("div");
+  wrapper.style.marginBottom = "1rem";
 
-  const idElem = document.createElement("h4");
-  const nameElem = document.createElement("h4");
-  const ageElem = document.createElement("h4");
-  const sponsorElem = document.createElement("h4");
+  const idElem = document.createElement("h5");
+  const nameElem = document.createElement("h5");
+  const ageElem = document.createElement("h5");
+  const sponsorElem = document.createElement("h5");
   idElem.innerText = "ID: " + id;
   nameElem.innerText = "Name: " + firstName + " " + lastName;
   ageElem.innerText = "Age: " + age;
   sponsorElem.innerText = "Main sponsor: " + mainSponsor;
-  container.appendChild(idElem);
-  container.appendChild(nameElem);
-  container.appendChild(ageElem);
-  container.appendChild(sponsorElem);
+  wrapper.appendChild(idElem);
+  wrapper.appendChild(nameElem);
+  wrapper.appendChild(ageElem);
+  wrapper.appendChild(sponsorElem);
+  outputWrapper.appendChild(wrapper);
 };
 
 const createStatusElement = (errorMsg, color) => {
   const errorElem = document.createElement("h4");
   errorElem.style.color = color;
   errorElem.innerText = errorMsg;
-  container.appendChild(errorElem);
+  outputWrapper.appendChild(errorElem);
 };
 
 const createResponse = (response) => {
@@ -147,8 +141,8 @@ const createResponse = (response) => {
   }
 };
 
-const clearContainer = () => {
-  while (container.lastChild) {
-    container.removeChild(container.lastChild);
+const clearOutput = () => {
+  while (outputWrapper.lastChild) {
+    outputWrapper.removeChild(outputWrapper.lastChild);
   }
 };
