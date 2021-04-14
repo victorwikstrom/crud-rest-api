@@ -13,11 +13,12 @@ app.use(express.urlencoded({ extended: true }));
 // GET ALL
 app.get("/api", async (req, res) => {
   const data = await readJsonData("./golfers.json");
-  if (data) {
+  if (data.length > 2) {
+    console.log(data);
     const golfers = JSON.parse(data.toString());
     res.status(200).json(golfers);
   } else {
-    throw new ResErr(404, "No golfers in datafile");
+    throw new ResErr(404, "Couldn't find any golfers in datafile");
   }
 });
 

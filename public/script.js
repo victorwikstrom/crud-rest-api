@@ -8,6 +8,20 @@ const initApp = () => {
 
 const outputWrapper = document.createElement("div");
 
+let newGolfer = {
+  firstName: "",
+  lastName: "",
+  age: "",
+  mainSponsor: "",
+};
+
+let updatedGolfer = {
+  firstName: "",
+  lastName: "",
+  age: "",
+  mainSponsor: "",
+};
+
 const addEventListeners = () => {
   // GET ALL BUTTON
   const fetchAllBtn = document.getElementById("fetchAll");
@@ -24,7 +38,46 @@ const addEventListeners = () => {
   // CREATE GOLFER BUTTON
   createBtn = document.getElementById("create");
   createBtn.addEventListener("click", () => {
-    createNewGolfer();
+    showForm(true, "create-form");
+
+    const firstName = document.getElementById("fname");
+    const lastName = document.getElementById("lname");
+    const age = document.getElementById("age");
+    const sponsor = document.getElementById("sponsor");
+
+    firstName.addEventListener("change", (e) => {
+      handleNewGolferInput(e);
+    });
+    lastName.addEventListener("change", (e) => {
+      handleNewGolferInput(e);
+    });
+    age.addEventListener("change", (e) => {
+      handleNewGolferInput(e);
+    });
+    sponsor.addEventListener("change", (e) => {
+      handleNewGolferInput(e);
+    });
+  });
+
+  function handleNewGolferInput(e) {
+    const value = e.target.value;
+    newGolfer = {
+      ...newGolfer,
+      [e.target.name]: value,
+    };
+  }
+
+  // POST GOLFER TO SERVER BUTTON
+  createNewGolferBtn = document.getElementById("postGolfer");
+  createNewGolferBtn.addEventListener("click", () => {
+    createNewGolfer(newGolfer);
+    showForm(false, "create-form");
+    newGolfer = {
+      firstName: "",
+      lastName: "",
+      age: "",
+      mainSponsor: "",
+    };
   });
 
   // UPDATE GOLFER BUTTON
@@ -39,14 +92,22 @@ const addEventListeners = () => {
     deleteGolfer(2);
   });
 
+  // DELETE ALL BUTTON
+  deleteAllBtn = document.getElementById("deleteAll");
+  deleteAllBtn.addEventListener("click", () => {
+    deleteAll();
+  });
+
   const rightWrapper = document.getElementById("right-wrapper");
   rightWrapper.appendChild(outputWrapper);
 };
 
+//  BUTTON FUNCTIONS ****************
+
 const fetchAllGolfers = async () => {
   const response = await makeRequest("/api", "GET");
-  if (response == []) {
-    createStatusElement("No golfers are defined on the server");
+  if (!response.length) {
+    createResponse(response);
   } else {
     response.map((golfer) => {
       createGolferElements(golfer);
@@ -54,22 +115,24 @@ const fetchAllGolfers = async () => {
   }
 };
 const fetchSpecificGolfer = async (id) => {
-  const golfer = await makeRequest(`/api/${id}`, "GET");
-  if (golfer.id) {
-    createGolferElements(golfer);
+  const response = await makeRequest(`/api/${id}`, "GET");
+  if (response.id) {
+    createGolferElements(response);
   } else {
-    createStatusElement(`No golfer was found on id: ${id}.`);
+    createResponse(response);
   }
 };
 
-const createNewGolfer = async () => {
-  const newGolfer = {
-    firstName: "Victor",
-    lastName: "Wikström",
-    age: "28",
-    mainSponsor: "Mum and Dad",
-  };
+const showForm = (show, formToChange) => {
+  const form = document.getElementById(formToChange);
+  if (show) {
+    form.classList.remove("hidden");
+    return;
+  }
+  form.classList.add("hidden");
+};
 
+const createNewGolfer = async (newGolfer) => {
   const response = await makeRequest("/api/", "POST", newGolfer);
   createResponse(response);
 };
@@ -89,6 +152,12 @@ const deleteGolfer = async (id) => {
   createResponse(response);
 };
 
+const deleteAll = async () => {
+  await makeRequest(`/api/`, "DELETE");
+  createStatusElement(`All golfers has been deleted from server.`);
+};
+
+//  REQUEST FUNCTION ****************
 const makeRequest = async (url, method, reqBody) => {
   clearOutput();
 
@@ -102,6 +171,8 @@ const makeRequest = async (url, method, reqBody) => {
   const result = await response.json();
   return result;
 };
+
+// HELPER FUNCTIONS ****************
 
 const createGolferElements = (golfer) => {
   const { id, firstName, lastName, age, mainSponsor } = golfer;

@@ -5,7 +5,7 @@
   "main": "helpers.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon server.js --watch script.js"
+    "start": "nodemon server.js --watch server.js"
   },
   "repository": {
     "type": "git",
