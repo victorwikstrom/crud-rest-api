@@ -3,6 +3,7 @@ window.addEventListener("load", () => {
 });
 
 const initApp = () => {
+  console.log("init");
   addEventListeners();
   fetchAll();
 };
@@ -20,7 +21,19 @@ const addEventListeners = () => {
   // GET SPECIFIC BUTTON
   fetchSpecificBtn = document.getElementById("fetchSpecific");
   fetchSpecificBtn.addEventListener("click", () => {
-    fetchSpecificGolfer(3);
+    const findForm = document.getElementById("find-form");
+    findForm.classList.toggle("hidden");
+  });
+
+  // FIND GOLFER
+  const findInput = document.getElementById("find-id");
+  let idToFind = 0;
+  findInput.addEventListener("change", (e) => {
+    idToFind = e.target.value;
+  });
+  const findGolferButton = document.getElementById("findGolfer");
+  findGolferButton.addEventListener("click", () => {
+    fetchSpecificGolfer(idToFind);
   });
 
   // CREATE GOLFER BUTTON
@@ -80,6 +93,7 @@ const fetchSpecificGolfer = async (id) => {
   const response = await makeRequest(`/api/${id}`, "GET");
   if (response.id) {
     createGolferElements(response);
+    console.log(response);
   } else {
     createResponse(response);
   }
@@ -88,25 +102,21 @@ const fetchSpecificGolfer = async (id) => {
 const createNewGolfer = async (newGolfer) => {
   const response = await makeRequest("/api/", "POST", newGolfer);
   createResponse(response);
-  createGotItBtn();
 };
 
 const updateGolfer = async (id) => {
-  const response = await makeRequest(`/api/${1}`, "PUT", newGolferValues);
+  const response = await makeRequest(`/api/${id}`, "PUT", newGolferValues);
   createResponse(response);
-  createGotItBtn();
 };
 
 const deleteGolfer = async (id) => {
   const response = await makeRequest(`/api/${id}`, "DELETE");
   createResponse(response);
-  createGotItBtn();
 };
 
 const deleteAll = async () => {
   const response = await makeRequest(`/api/`, "DELETE");
   createResponse(response);
-  createGotItBtn();
 };
 
 //  REQUEST FUNCTION ****************
@@ -120,8 +130,8 @@ const makeRequest = async (url, method, reqBody) => {
     },
     body: JSON.stringify(reqBody),
   });
-  const result = await response.json();
-  return result;
+
+  return response.json();
 };
 
 // HELPER FUNCTIONS ****************
@@ -134,10 +144,12 @@ const createGolferElements = (golfer) => {
     const rowElem = document.createElement("div");
     const keyElem = document.createElement("h5");
     const valueElem = document.createElement("h5");
+    rowElem.style.marginBottom = "5px";
     keyElem.style.fontWeight = "bold";
+    keyElem.style.marginRight = "5px";
     rowElem.style.display = "flex";
-    keyElem.innerText = key;
-    valueElem.innerText = ": " + value;
+    keyElem.innerText = key + ":";
+    valueElem.innerText = value;
     rowElem.appendChild(keyElem);
     rowElem.appendChild(valueElem);
     golferWrapper.appendChild(rowElem);
@@ -181,8 +193,10 @@ const createResponse = (response) => {
       response.errorCode + " error. " + response.message,
       "red"
     );
+    createGotItBtn();
   } else {
     createStatusElement(response, "black");
+    createGotItBtn();
   }
 };
 
@@ -222,14 +236,15 @@ const makeGolferUpdateable = (golfer, wrapper) => {
     if (key === "id") continue;
 
     const rowElem = document.createElement("div");
+    rowElem.style.marginBottom = "5px";
     const keyElem = document.createElement("h5");
     const inputElem = document.createElement("input");
-    inputElem.placeholder = value;
+    inputElem.value = value;
     inputElem.name = key;
     keyElem.style.fontWeight = "bold";
+    keyElem.style.marginRight = "5px";
     rowElem.style.display = "flex";
-
-    keyElem.innerText = key + ": ";
+    keyElem.innerText = key + ":";
 
     inputElem.addEventListener("change", (e) => {
       handleInputFieldChange(e);

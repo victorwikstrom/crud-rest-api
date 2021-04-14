@@ -50,6 +50,18 @@ button:focus {
   font-size: 0.9rem;
 }
 
+input {
+  padding: 0.5em 1em;
+  border: 1px solid black;
+  border-radius: 3px;
+  font-size: 1rem;
+  background: transparent;
+}
+
+input:focus {
+  outline: none;
+}
+
 .container {
   display: flex;
   align-items: center;
