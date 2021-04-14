@@ -25,7 +25,6 @@ form {
 }
 
 button {
-  font-size: 1rem;
   padding: 0.8em 1.5em;
   margin: 0 0.3em 0.3em 0;
   border-radius: 2em;
@@ -43,11 +42,21 @@ button:focus {
   outline: none;
 }
 
+.largeButton {
+  font-size: 1rem;
+}
+
+.smallButton {
+  font-size: 0.9rem;
+}
+
 .container {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4rem;
+  flex-wrap: wrap;
+  height: 50vh;
 }
 
 .wrapper {
@@ -61,8 +70,10 @@ button:focus {
 .left {
 }
 .right {
+  position: relative;
   border: 2px solid #4095c6;
   border-radius: 2em;
   width: 50%;
-  min-height: 50vh;
+  height: 100%;
+  overflow-y: auto;
 }

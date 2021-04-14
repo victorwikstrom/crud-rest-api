@@ -14,7 +14,6 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/api", async (req, res) => {
   const data = await readJsonData("./golfers.json");
   if (data.length > 2) {
-    console.log(data);
     const golfers = JSON.parse(data.toString());
     res.status(200).json(golfers);
   } else {
@@ -45,7 +44,7 @@ app.post("/api", async (req, res) => {
   const data = await readJsonData("./golfers.json");
   if (data) {
     const golfers = JSON.parse(data.toString());
-    const newGolfer = { ...req.body, id: String(getNewId(golfers)) };
+    const newGolfer = { id: String(getNewId(golfers)), ...req.body };
     golfers.push(newGolfer);
     writeJsonData("./golfers.json", golfers);
     res
@@ -60,11 +59,12 @@ app.post("/api", async (req, res) => {
   }
 });
 
-// UPDATE GOLFER SPONSOR
+// UPDATE GOLFER
 app.put("/api/:id", async (req, res) => {
   const data = await readJsonData("./golfers.json");
   if (data) {
     const golfers = JSON.parse(data.toString());
+
     const index = golfers.findIndex((g) => g.id === req.params.id);
     if (index === -1) {
       throw new ResErr(
@@ -72,15 +72,14 @@ app.put("/api/:id", async (req, res) => {
         `No golfer with id '${req.params.id}' exists in file`
       );
     }
-    const { mainSponsor } = req.body;
-    golfers[index].mainSponsor = mainSponsor;
+    golfers[index] = { id: req.params.id, ...req.body };
     await writeJsonData("./golfers.json", golfers);
     res
       .status(200)
       .json(
-        `${
-          golfers[index].firstName + " " + golfers[index].lastName
-        } has updated sponsor to ${mainSponsor}.`
+        `Golfer with id ${req.params.id} have been sucessfully updated to ${
+          req.body.firstName + " " + req.body.lastName
+        } .`
       );
   } else {
     throw new ResErr(404, "No golfers in datafile");
@@ -120,6 +119,7 @@ app.delete("/api/:id", async (req, res) => {
 app.delete("/api/", async (req, res) => {
   const golfers = [];
   await writeJsonData("./golfers.json", golfers);
+  res.status(200).json(`All golfers has been successfully deleted from file.`);
 });
 
 // ERROR MIDDLEWARE

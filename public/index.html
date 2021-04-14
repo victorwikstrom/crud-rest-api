@@ -12,26 +12,61 @@
     <h1>CRUD API for some golfers in a JSON file</h1>
     <div class="container">
       <div class="left wrapper" id="left-wrapper">
-        <button id="fetchAll">Fetch all golfers</button>
-        <button id="fetchSpecific">Fetch specific golfer</button>
-        <button id="create">Add new golfer</button>
+        <button class="largeButton" id="fetchSpecific">
+          Fetch specific golfer
+        </button>
+        <button class="largeButton" id="create">Add new golfer</button>
         <form id="create-form" class="hidden">
           <label for="fname">First name:</label><br />
-          <input type="text" id="fname" name="firstName" /><br />
+          <input
+            class="create-input"
+            type="text"
+            id="create-fname"
+            name="firstName"
+          /><br />
           <label for="lname">Last name:</label><br />
-          <input type="text" id="lname" name="lastName" /><br />
+          <input
+            class="create-input"
+            type="text"
+            id="create-lname"
+            name="lastName"
+          /><br />
           <label for="age">Age:</label><br />
-          <input type="text" id="age" name="age" /><br />
+          <input
+            class="create-input"
+            type="text"
+            id="create-age"
+            name="age"
+          /><br />
           <label for="sponsor">Main sponsor:</label><br />
-          <input type="text" id="sponsor" name="mainSponsor" /><br />
-          <button id="postGolfer">Create</button>
+          <input
+            class="create-input"
+            type="text"
+            id="create-sponsor"
+            name="mainSponsor"
+          /><br />
+          <button class="smallButton" id="postGolfer">Create</button>
         </form>
-        <button id="update">Update existing golfer</button>
-        <button id="deleteSpecific">Delete specific golfer</button>
-        <button id="deleteAll">Delete all golfers</button>
+        <button class="largeButton" id="update">Update existing golfer</button>
+        <form id="update-form" class="hidden">
+          <label for="fname">ID to update:</label><br />
+          <input type="text" id="idToUpdate" name="idToUpdate" /><br />
+          <label for="fname">New first name:</label><br />
+          <input type="text" id="update-fname" name="firstName" /><br />
+          <label for="lname">New last name:</label><br />
+          <input type="text" id="update-lname" name="lastName" /><br />
+          <label for="age">New age:</label><br />
+          <input type="text" id="update-age" name="age" /><br />
+          <label for="sponsor">New main sponsor:</label><br />
+          <input type="text" id="update-sponsor" name="mainSponsor" /><br />
+          <button id="updaetGolfer">Update</button>
+        </form>
+        <button class="largeButton" id="deleteAll">Delete all golfers</button>
       </div>
       <div class="right wrapper" id="right-wrapper">
-        <h2>Output from server</h2>
+        <div class="right-header">
+          <h2>Output from server</h2>
+        </div>
       </div>
     </div>
   </body>

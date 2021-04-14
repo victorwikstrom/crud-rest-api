@@ -4,18 +4,12 @@ window.addEventListener("load", () => {
 
 const initApp = () => {
   addEventListeners();
+  fetchAll();
 };
 
 const outputWrapper = document.createElement("div");
 
-let newGolfer = {
-  firstName: "",
-  lastName: "",
-  age: "",
-  mainSponsor: "",
-};
-
-let updatedGolfer = {
+let newGolferValues = {
   firstName: "",
   lastName: "",
   age: "",
@@ -23,12 +17,6 @@ let updatedGolfer = {
 };
 
 const addEventListeners = () => {
-  // GET ALL BUTTON
-  const fetchAllBtn = document.getElementById("fetchAll");
-  fetchAllBtn.addEventListener("click", () => {
-    fetchAllGolfers();
-  });
-
   // GET SPECIFIC BUTTON
   fetchSpecificBtn = document.getElementById("fetchSpecific");
   fetchSpecificBtn.addEventListener("click", () => {
@@ -38,58 +26,32 @@ const addEventListeners = () => {
   // CREATE GOLFER BUTTON
   createBtn = document.getElementById("create");
   createBtn.addEventListener("click", () => {
-    showForm(true, "create-form");
+    const form = document.getElementById("create-form");
+    form.classList.toggle("hidden");
 
-    const firstName = document.getElementById("fname");
-    const lastName = document.getElementById("lname");
-    const age = document.getElementById("age");
-    const sponsor = document.getElementById("sponsor");
+    let inputElems = document.getElementsByClassName("create-input");
+    inputElems = Array.from(inputElems);
 
-    firstName.addEventListener("change", (e) => {
-      handleNewGolferInput(e);
-    });
-    lastName.addEventListener("change", (e) => {
-      handleNewGolferInput(e);
-    });
-    age.addEventListener("change", (e) => {
-      handleNewGolferInput(e);
-    });
-    sponsor.addEventListener("change", (e) => {
-      handleNewGolferInput(e);
+    inputElems.map((input) => {
+      input.addEventListener("change", (e) => {
+        handleInputFieldChange(e);
+        console.log(newGolferValues);
+      });
     });
   });
-
-  function handleNewGolferInput(e) {
-    const value = e.target.value;
-    newGolfer = {
-      ...newGolfer,
-      [e.target.name]: value,
-    };
-  }
 
   // POST GOLFER TO SERVER BUTTON
   createNewGolferBtn = document.getElementById("postGolfer");
   createNewGolferBtn.addEventListener("click", () => {
-    createNewGolfer(newGolfer);
-    showForm(false, "create-form");
-    newGolfer = {
-      firstName: "",
-      lastName: "",
-      age: "",
-      mainSponsor: "",
-    };
+    createNewGolfer(newGolferValues);
+    const form = document.getElementById("create-form");
+    form.classList.toggle("hidden");
   });
 
-  // UPDATE GOLFER BUTTON
+  // UPDATE GOLFER BUTTON SHOW FORM
   updateBtn = document.getElementById("update");
   updateBtn.addEventListener("click", () => {
-    updateGolfer(2);
-  });
-
-  // DELETE GOLFER BUTTON
-  deleteBtn = document.getElementById("deleteSpecific");
-  deleteBtn.addEventListener("click", () => {
-    deleteGolfer(2);
+    fetchAll();
   });
 
   // DELETE ALL BUTTON
@@ -104,7 +66,7 @@ const addEventListeners = () => {
 
 //  BUTTON FUNCTIONS ****************
 
-const fetchAllGolfers = async () => {
+const fetchAll = async () => {
   const response = await makeRequest("/api", "GET");
   if (!response.length) {
     createResponse(response);
@@ -123,38 +85,28 @@ const fetchSpecificGolfer = async (id) => {
   }
 };
 
-const showForm = (show, formToChange) => {
-  const form = document.getElementById(formToChange);
-  if (show) {
-    form.classList.remove("hidden");
-    return;
-  }
-  form.classList.add("hidden");
-};
-
 const createNewGolfer = async (newGolfer) => {
   const response = await makeRequest("/api/", "POST", newGolfer);
   createResponse(response);
+  createGotItBtn();
 };
 
 const updateGolfer = async (id) => {
-  const newSponsor = { mainSponsor: "Cobra" };
-  const response = await makeRequest(
-    `http://localhost:5000/api/${id}`,
-    "PUT",
-    newSponsor
-  );
+  const response = await makeRequest(`/api/${1}`, "PUT", newGolferValues);
   createResponse(response);
+  createGotItBtn();
 };
 
 const deleteGolfer = async (id) => {
   const response = await makeRequest(`/api/${id}`, "DELETE");
   createResponse(response);
+  createGotItBtn();
 };
 
 const deleteAll = async () => {
-  await makeRequest(`/api/`, "DELETE");
-  createStatusElement(`All golfers has been deleted from server.`);
+  const response = await makeRequest(`/api/`, "DELETE");
+  createResponse(response);
+  createGotItBtn();
 };
 
 //  REQUEST FUNCTION ****************
@@ -175,23 +127,45 @@ const makeRequest = async (url, method, reqBody) => {
 // HELPER FUNCTIONS ****************
 
 const createGolferElements = (golfer) => {
-  const { id, firstName, lastName, age, mainSponsor } = golfer;
-  const wrapper = document.createElement("div");
-  wrapper.style.marginBottom = "1rem";
+  const golferWrapper = document.createElement("div");
+  golferWrapper.style.marginBottom = "1rem";
 
-  const idElem = document.createElement("h5");
-  const nameElem = document.createElement("h5");
-  const ageElem = document.createElement("h5");
-  const sponsorElem = document.createElement("h5");
-  idElem.innerText = "ID: " + id;
-  nameElem.innerText = "Name: " + firstName + " " + lastName;
-  ageElem.innerText = "Age: " + age;
-  sponsorElem.innerText = "Main sponsor: " + mainSponsor;
-  wrapper.appendChild(idElem);
-  wrapper.appendChild(nameElem);
-  wrapper.appendChild(ageElem);
-  wrapper.appendChild(sponsorElem);
-  outputWrapper.appendChild(wrapper);
+  for (const [key, value] of Object.entries(golfer)) {
+    const rowElem = document.createElement("div");
+    const keyElem = document.createElement("h5");
+    const valueElem = document.createElement("h5");
+    keyElem.style.fontWeight = "bold";
+    rowElem.style.display = "flex";
+    keyElem.innerText = key;
+    valueElem.innerText = ": " + value;
+    rowElem.appendChild(keyElem);
+    rowElem.appendChild(valueElem);
+    golferWrapper.appendChild(rowElem);
+  }
+
+  const buttonsWrapper = document.createElement("div");
+
+  const editButton = document.createElement("button");
+  const deleteButton = document.createElement("button");
+
+  editButton.classList.add("smallButton");
+  deleteButton.classList.add("smallButton");
+
+  editButton.innerText = "EDIT";
+  deleteButton.innerText = "DELETE";
+
+  deleteButton.addEventListener("click", () => {
+    deleteGolfer(golfer.id);
+  });
+
+  editButton.addEventListener("click", () => {
+    makeGolferUpdateable(golfer, golferWrapper);
+  });
+
+  buttonsWrapper.appendChild(editButton);
+  buttonsWrapper.appendChild(deleteButton);
+  golferWrapper.appendChild(buttonsWrapper);
+  outputWrapper.appendChild(golferWrapper);
 };
 
 const createStatusElement = (errorMsg, color) => {
@@ -216,4 +190,77 @@ const clearOutput = () => {
   while (outputWrapper.lastChild) {
     outputWrapper.removeChild(outputWrapper.lastChild);
   }
+};
+
+const createGotItBtn = () => {
+  const btn = document.createElement("button");
+  btn.classList.add("largeButton");
+  btn.innerText = "Got it!";
+  const wrapper = document.getElementById("right-wrapper");
+  btn.addEventListener("click", () => {
+    fetchAll();
+    wrapper.removeChild(btn);
+  });
+  wrapper.appendChild(btn);
+};
+
+function handleInputFieldChange(e) {
+  const value = e.target.value;
+  newGolferValues = {
+    ...newGolferValues,
+    [e.target.name]: value,
+  };
+}
+
+const makeGolferUpdateable = (golfer, wrapper) => {
+  console.log(golfer);
+  while (wrapper.lastChild) {
+    wrapper.removeChild(wrapper.lastChild);
+  }
+
+  for (const [key, value] of Object.entries(golfer)) {
+    if (key === "id") continue;
+
+    const rowElem = document.createElement("div");
+    const keyElem = document.createElement("h5");
+    const inputElem = document.createElement("input");
+    inputElem.placeholder = value;
+    inputElem.name = key;
+    keyElem.style.fontWeight = "bold";
+    rowElem.style.display = "flex";
+
+    keyElem.innerText = key + ": ";
+
+    inputElem.addEventListener("change", (e) => {
+      handleInputFieldChange(e);
+      console.log(newGolferValues);
+    });
+
+    rowElem.appendChild(keyElem);
+    rowElem.appendChild(inputElem);
+    wrapper.appendChild(rowElem);
+  }
+
+  const buttonsWrapper = document.createElement("div");
+
+  const updateButton = document.createElement("button");
+  const cancelButton = document.createElement("button");
+
+  updateButton.classList.add("smallButton");
+  cancelButton.classList.add("smallButton");
+
+  updateButton.innerText = "SAVE CHANGES";
+  cancelButton.innerText = "CANCEL";
+
+  cancelButton.addEventListener("click", () => {
+    fetchAll();
+  });
+
+  updateButton.addEventListener("click", () => {
+    updateGolfer(golfer.id);
+  });
+
+  buttonsWrapper.appendChild(updateButton);
+  buttonsWrapper.appendChild(cancelButton);
+  wrapper.appendChild(buttonsWrapper);
 };

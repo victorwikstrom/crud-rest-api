@@ -9,9 +9,12 @@ GET http://localhost:5000/api/1
 PUT http://localhost:5000/api/3
 Content-Type: application/json
 
- { 
-   "mainSponsor": "Cobra" 
- }
+ {
+    "firstName": "Viktor",
+    "lastName": "Hovland",
+    "age": "21",
+    "mainSponsor": "Ping"
+  }
 
 ###
 
