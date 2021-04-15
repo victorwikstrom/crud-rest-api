@@ -16,12 +16,9 @@ h5 {
   font-weight: 400;
 }
 
-form {
-  margin-bottom: 1rem;
-}
-
 .hidden {
   display: none;
+  height: 0px;
 }
 
 button {
@@ -50,12 +47,17 @@ button:focus {
   font-size: 0.9rem;
 }
 
+.delete:hover {
+  background-color: #eb4034;
+}
+
 input {
-  padding: 0.5em 1em;
+  padding: 0.5em;
   border: 1px solid black;
   border-radius: 3px;
   font-size: 1rem;
   background: transparent;
+  transition: height 800ms ease;
 }
 
 input:focus {
@@ -79,10 +81,7 @@ input:focus {
   padding: 2rem;
 }
 
-.left {
-}
 .right {
-  position: relative;
   border: 2px solid #4095c6;
   border-radius: 2em;
   width: 50%;
